@@ -35,7 +35,10 @@ MapDrawer <- module({
   #taipei_districts = merge(taipei_neighborhoods, region_values, by.x='id')
   
   # create map
-  taipei_map = get_map(location = 'Taipei', zoom = 11)
+  taipei_bbox <- bbox(taipei_districts)
+  cen_long <- mean(taipei_bbox[1,])
+  cen_lat <- mean(taipei_bbox[2,])
+  taipei_map = get_map(location = c(lon=cen_long, lat=cen_lat), zoom = 11)
   # functions
   drawTaipei <- function() {
     return(ggmap(taipei_map) + geom_polygon(aes(fill = "district", x = long, y = lat, group = group), data = taipei_districts, alpha = 0.8, color = "blue", size = 0.2))
