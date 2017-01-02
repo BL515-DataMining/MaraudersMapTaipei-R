@@ -23,4 +23,34 @@ AnlGrid <- module({
     grid_raster.mean <- focal(grid_raster, w=wmat, fun=sum)
     return(grid_raster.mean)
   }
+
+  xy_by_indices <- function(indices, ncol) {
+    x_indices <- indices %% ncol
+    y_indices <- indices %/% ncol
+    y_indices[x_indices != 0] = y_indices[x_indices != 0] + 1
+    x_indices[x_indices == 0] <- ncol
+    return(cbind(x = x_indices, y = y_indices))
+  }
+
+  indinces_by_xy <- function(xy, ncol) {
+    return(ncol * (xy[,c("y")] - 1) + xy[,c("x")])
+  }
+
+  neighbor_xy <- function(xy, n, ncol, nrow) {
+    shift_num <- n %/% 2
+    n_xy <- data.frame(xy)
+    for(sx in c(-shift_num:shift_num)) {
+      for(sy in c(-shift_num:shift_num)) {
+        if(sx != 0 || sy != 0) {
+          s_xy <- data.frame(xy)
+          s_xy$x <- s_xy$x + sx
+          s_xy$y <- s_xy$y + sy
+          s_xy.f <- s_xy[s_xy$x >= 1 && s_xy$x <= ncol && s_xy$y >= 1 && s_xy$y <= nrow,]
+          n_xy <- rbind(n_xy, s_xy.f)
+          n_xy <- n_xy[!duplicated(n_xy), ]
+        }
+      }
+    }
+    return(n_xy)
+  }
 })
