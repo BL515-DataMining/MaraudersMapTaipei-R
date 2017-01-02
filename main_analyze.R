@@ -72,3 +72,27 @@ features_no_station.n3.pop100.density.grid <- features_valid.n3.pop100.density.g
 mean_has_station.n3.pop100.density <- data.frame(colMeans(features_has_station.n3.pop100.density.grid))
 mean_no_station.n3.pop100.density <- data.frame(colMeans(features_no_station.n3.pop100.density.grid))
 
+# police station n3 with denstiy factor 100m
+# population threshold 10
+features.n3.pop10.density.grid <- read.csv("data/feature/features_pop10_density_100m.csv", header = TRUE, sep = ",", encoding = "UTF-8")
+features_valid.n3.pop10.density.grid <- features.n3.pop10.density.grid[which(features.n3.pop10.density.grid$pop_valid), -which(names(features.n3.pop10.density.grid) %in% c("pop_valid"))]
+features_has_station.n3.pop10.density.grid <- features_valid.n3.pop10.density.grid[which(features_valid.n3.pop10.density.grid$has_station_n3), -which(names(features_valid.n3.pop10.density.grid) %in% c("has_station", "has_station_n3"))]
+features_no_station.n3.pop10.density.grid <- features_valid.n3.pop10.density.grid[which(!features_valid.n3.pop10.density.grid$has_station_n3), -which(names(features_valid.n3.pop10.density.grid) %in% c("has_station", "has_station_n3"))]
+mean_has_station.n3.pop10.density <- data.frame(colMeans(features_has_station.n3.pop10.density.grid))
+mean_no_station.n3.pop10.density <- data.frame(colMeans(features_no_station.n3.pop10.density.grid))
+
+# population threshold 50
+features.n3.pop50.density.grid <- read.csv("data/feature/features_pop50_density_100m.csv", header = TRUE, sep = ",", encoding = "UTF-8")
+features_valid.n3.pop50.density.grid <- features.n3.pop50.density.grid[which(features.n3.pop50.density.grid$pop_valid), -which(names(features.n3.pop50.density.grid) %in% c("pop_valid"))]
+features_has_station.n3.pop50.density.grid <- features_valid.n3.pop50.density.grid[which(features_valid.n3.pop50.density.grid$has_station_n3), -which(names(features_valid.n3.pop50.density.grid) %in% c("has_station", "has_station_n3"))]
+features_no_station.n3.pop50.density.grid <- features_valid.n3.pop50.density.grid[which(!features_valid.n3.pop50.density.grid$has_station_n3), -which(names(features_valid.n3.pop50.density.grid) %in% c("has_station", "has_station_n3"))]
+mean_has_station.n3.pop50.density <- data.frame(colMeans(features_has_station.n3.pop50.density.grid))
+mean_no_station.n3.pop50.density <- data.frame(colMeans(features_no_station.n3.pop50.density.grid))
+
+# population threshold 100
+features.n3.pop100.density.grid <- read.csv("data/feature/features_pop100_density_100m.csv", header = TRUE, sep = ",", encoding = "UTF-8")
+features_valid.n3.pop100.density.grid <- features.n3.pop100.density.grid[which(features.n3.pop100.density.grid$pop_valid), -which(names(features.n3.pop100.density.grid) %in% c("pop_valid"))]
+features_has_station.n3.pop100.density.grid <- features_valid.n3.pop100.density.grid[which(features_valid.n3.pop100.density.grid$has_station_n3), -which(names(features_valid.n3.pop100.density.grid) %in% c("has_station", "has_station_n3"))]
+features_no_station.n3.pop100.density.grid <- features_valid.n3.pop100.density.grid[which(!features_valid.n3.pop100.density.grid$has_station_n3), -which(names(features_valid.n3.pop100.density.grid) %in% c("has_station", "has_station_n3"))]
+mean_has_station.n3.pop100.density <- data.frame(colMeans(features_has_station.n3.pop100.density.grid))
+mean_no_station.n3.pop100.density <- data.frame(colMeans(features_no_station.n3.pop100.density.grid))

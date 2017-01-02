@@ -3,6 +3,7 @@ source("convert_coord_to_raster.R")
 source("gen_grid.R")
 source("analyze_grid.R")
 source("map_drawer.R")
+library(plyr)
 
 # read in taipei test event data
 # coord_district <- read.csv("data/test/test_coord_district.csv", header = TRUE, sep = ",", encoding = "UTF-8")
@@ -27,6 +28,38 @@ buglary_car <- read.csv("data/burglary/car.csv", header = TRUE, sep = ",", encod
 buglary_bike <- read.csv("data/burglary/bicycle.csv", header = TRUE, sep = ",", encoding = "UTF-8")
 # police stations
 police_stations <- read.csv("data/police_station/taipei_police_station.csv", header = TRUE, sep = ",", encoding = "UTF-8")
+
+# crime districts
+buglary_home.coords <- buglary_home[,c("long", "lat")]
+buglary_car.coords <- buglary_car[,c("long", "lat")]
+buglary_bike.coords <- buglary_bike[,c("long", "lat")]
+buglary_home.districts <- Coord2District$convert(buglary_home.coords)
+buglary_car.districts <- Coord2District$convert(buglary_car.coords)
+buglary_bike.districts <- Coord2District$convert(buglary_bike.coords)
+buglary_home.locations <- cbind(buglary_home[,c("long", "lat")], district=buglary_home.districts$district)
+buglary_car.locations <- cbind(buglary_car[,c("long", "lat")], district=buglary_car.districts$district)
+buglary_bike.locations <- cbind(buglary_bike[,c("long", "lat")], district=buglary_bike.districts$district)
+buglary_home.count <- data.frame(buglary_home.locations %>% group_by(district) %>% summarise(freq=length(district)))
+buglary_car.count <- data.frame(buglary_car.locations %>% group_by(district) %>% summarise(freq=length(district)))
+buglary_bike.count <- data.frame(buglary_bike.locations %>% group_by(district) %>% summarise(freq=length(district)))
+names(buglary_home.count) <- c("x", "freq")
+names(buglary_car.count) <- c("x", "freq")
+names(buglary_bike.count) <- c("x", "freq")
+
+# police station districts
+police_stations.coords <- police_stations[,c("long", "lat")]
+police_stations.districts <- Coord2District$convert(police_stations.coords)
+police_stations.locations <- cbind(police_stations[,c("long", "lat")], district=police_stations.districts$district)
+police_stations.count <- data.frame(police_stations.locations %>% group_by(district) %>% summarise(freq=length(district)))
+names(police_stations.count) <- c("x", "freq")
+
+# population districts
+pop_density.count <- districts_pop_density
+names(pop_density.count) <- c("x", "freq")
+
+# write.csv(buglary_home.locations, "data/burglary/home_district.csv", row.names=FALSE)
+# write.csv(buglary_car.locations, "data/burglary/car_district.csv", row.names=FALSE)
+# write.csv(buglary_bike.locations, "data/burglary/bike_district.csv", row.names=FALSE)
 
 # grid count
 buglary_home.r = Coord2Raster$convert(buglary_home)
@@ -143,7 +176,7 @@ features.grid <- cbind(grid_coords, pop_valid=pop_density.grid$valid, has_statio
                        buglary_car=buglary_car.grid$val, buglary_car_density=buglary_car.density.grid$val, buglary_car_mean3=buglary_car.gridmean3$val, buglary_car_mean5=buglary_car.gridmean5$val, buglary_car_mean7=buglary_car.gridmean7$val, buglary_car_mean9=buglary_car.gridmean9$val,
                        buglary_bike=buglary_bike.grid$val, buglary_bike_density=buglary_bike.density.grid$val, buglary_bike_mean3=buglary_bike.gridmean3$val, buglary_bike_mean5=buglary_bike.gridmean5$val, buglary_bike_mean7=buglary_bike.gridmean7$val, buglary_bike_mean9=buglary_bike.gridmean9$val)
 # write feature data
-write.csv(features.grid, "data/feature/features_pop100_density.csv", row.names=FALSE)
+# write.csv(features.grid, "data/feature/features_pop10_density_100m.csv", row.names=FALSE)
 
 # make 0 NA
 pop_density.grid$density[pop_density.grid$density == 0] <- NA
@@ -174,8 +207,15 @@ buglary_home.gridmean9$val[buglary_home.gridmean9$val == 0] <- NA
 buglary_car.gridmean9$val[buglary_car.gridmean9$val == 0] <- NA
 buglary_bike.gridmean9$val[buglary_bike.gridmean9$val == 0] <- NA
 
+# filt_pop_density.grid <- pop_density.grid[which(pop_density.grid$valid),]
+# filt_buglary_home.grid <- buglary_home.grid[which(pop_density.grid$valid),]
+# filt_buglary_home.gridmean5 <- buglary_home.gridmean5[which(pop_density.grid$valid),]
+# filt_police_stations.neighbor3 <- police_stations.neighbor3.grid[which(pop_density.grid$valid),]
+
 # draw map
+# MapDrawer$drawTaipei(fillData=pop_density.count)
 # MapDrawer$drawTaipei() + MapDrawer$drawRaster(police_stations.r) + MapDrawer$drawPoints(police_stations, "yellow")
 # MapDrawer$drawTaipei() + MapDrawer$drawPoints(grid_coords) + MapDrawer$drawRaster(buglary_home.r)
-# MapDrawer$drawTaipei() + geom_point(data = pop_density.grid, aes(x = long, y = lat, color = density), size = 2, alpha = 0.8)
-MapDrawer$drawTaipei() + geom_point(data = buglary_bike.gridmean3, aes(x = long, y = lat, color = val), size = 2, alpha = 0.8)
+# MapDrawer$drawTaipei() + geom_point(data = filt_police_stations.neighbor3, aes(x = long, y = lat, color = val), size = 0.1, alpha = 0.6) + scale_colour_gradient(low="green", high="red")
+# MapDrawer$drawTaipei() + geom_point(data = buglary_home.density.grid, aes(x = long, y = lat, color = val), size = 0.1, alpha = 0.8)
+

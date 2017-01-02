@@ -11,12 +11,13 @@ Coord2Raster <- module({
   taipei_districts <- readOGR(dsn = "data/shapefiles/taipei_district_wgs84", encoding = "UTF-8")
   taipei_districts <- spTransform(taipei_districts, CRS("+init=epsg:4326"))
   taipei_bbox = bbox(taipei_districts)
+  resolution <- 0.0009
   
   convert <- function (coords) {
     coords <- coords[,c("long", "lat")]
     coordinates(coords) <- c("long", "lat")
     # grid
-    r <- raster(xmn=taipei_bbox[1,1], ymn=taipei_bbox[2,1], xmx=taipei_bbox[1,2], ymx=taipei_bbox[2,2], res=0.0045)
+    r <- raster(xmn=taipei_bbox[1,1], ymn=taipei_bbox[2,1], xmx=taipei_bbox[1,2], ymx=taipei_bbox[2,2], res=resolution)
     r <- rasterize(coords, r, fun='count')
     # project raster
     t <- projectRaster(from = r, crs = CRS("+init=epsg:4326"))

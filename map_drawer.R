@@ -28,10 +28,11 @@ MapDrawer <- module({
   #writeOGR(obj=taipei_districts_t, dsn="data/shapefiles/taipei_district_wgs84", layer="taipei_district", driver="ESRI Shapefile", layer_options= c(encoding= "UTF-8"))
   
   # create region data
-  #taipei_fortify = fortify(taipei_districts, region = "VILLCODE")
-  #taipei_neighborhoods = merge(taipei_fortify, taipei_districts@data, by.x = "id", by.y = "VILLCODE")
-  #regions = taipei_neighborhoods %>% select(id) %>% distinct()
-  #region_values = data.frame(id = c(regions), value = c(runif(regions %>% count() %>% unlist(),5.0, 25.0)))
+  taipei_districts$TVNAME <- paste(taipei_districts$TOWNNAME, taipei_districts$VILLNAME, sep="")
+  taipei_fortify = fortify(taipei_districts, region = "TVNAME")
+  taipei_neighborhoods = merge(taipei_fortify, taipei_districts@data, by.x = "id", by.y = "TVNAME")
+  regions = taipei_neighborhoods %>% select(id) %>% distinct()
+  # region_values = data.frame(id = c(regions), value = c(runif(regions %>% count() %>% unlist(),5.0, 25.0)))
   #taipei_districts = merge(taipei_neighborhoods, region_values, by.x='id')
   
   # create map
@@ -40,8 +41,17 @@ MapDrawer <- module({
   cen_lat <- mean(taipei_bbox[2,])
   taipei_map = get_map(location = c(lon=cen_long, lat=cen_lat), zoom = 11)
   # functions
-  drawTaipei <- function() {
-    return(ggmap(taipei_map) + geom_polygon(aes(fill = "district", x = long, y = lat, group = group), data = taipei_districts, alpha = 0.8, color = "blue", size = 0.2))
+  drawTaipei <- function(fillData="None") {
+    if(class(fillData) != "character") {
+      region_values <- data.frame(id = c(regions), value = rep.int(0, length(regions)))
+      region_values <- merge(region_values, fillData, by.x="id", by.y="x", all.x=TRUE)
+      region_values <- region_values[,c("id", "freq")]
+      region_values[is.na(region_values)] <- 0
+      names(region_values) <- c("id", "value")
+      taipei_districts <- merge(taipei_neighborhoods, region_values, by.x='id')
+    }
+    # return(ggmap(taipei_map) + geom_polygon(aes(fill = value, x = long, y = lat, group = group), data = taipei_districts, alpha = 0.9, color = "blue", size = 0.1) + scale_fill_gradient(low="green", high="red"))
+    return(ggmap(taipei_map) + geom_polygon(aes(x = long, y = lat, group = group), data = taipei_districts, alpha = 0.9, fill="gray", color = "blue", size = 0.1))
   }
   
   drawPoints <- function(coords, color="red") {

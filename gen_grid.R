@@ -12,7 +12,7 @@ GenGrid <- module({
   taipei_districts <- spTransform(taipei_districts, CRS("+init=epsg:4326"))
   taipei_bbox <- bbox(taipei_districts)
   
-  resolution <- 0.0045
+  resolution <- 0.0009
   long_len <- floor(abs(taipei_bbox[1,2] - taipei_bbox[1,1]) / resolution) + 10
   lat_len <- floor(abs(taipei_bbox[2,2] - taipei_bbox[2,1]) / resolution) + 10
   
