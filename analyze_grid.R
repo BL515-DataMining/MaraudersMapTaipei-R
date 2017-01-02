@@ -24,6 +24,14 @@ AnlGrid <- module({
     return(grid_raster.mean)
   }
 
+  grid_divide_raster <- function(grid_raster, divide_array) {
+    grid_raster[is.na(grid_raster)] <- 0
+    divide_array[is.na(divide_array)] <- 0
+    divide_raster <- grid_raster / divide_array
+    divide_raster[divide_raster == Inf] <- 0
+    return(divide_raster)
+  }
+
   xy_by_indices <- function(indices, ncol) {
     x_indices <- indices %% ncol
     y_indices <- indices %/% ncol

@@ -41,6 +41,15 @@ buglary_car.grid <- GenGrid$from_raster(buglary_car.r)
 buglary_bike.grid <- GenGrid$from_raster(buglary_bike.r)
 police_stations.grid <- GenGrid$from_raster(police_stations.r)
 
+# handle density factor
+buglary_home.density.r <- AnlGrid$grid_divide_raster(buglary_home.r, pop_density.grid$density)
+buglary_car.density.r <- AnlGrid$grid_divide_raster(buglary_car.r, pop_density.grid$density)
+buglary_bike.density.r <- AnlGrid$grid_divide_raster(buglary_bike.r, pop_density.grid$density)
+
+buglary_home.density.grid <- GenGrid$from_raster(buglary_home.density.r)
+buglary_car.density.grid <- GenGrid$from_raster(buglary_car.density.r)
+buglary_bike.density.grid <- GenGrid$from_raster(buglary_bike.density.r)
+
 # write grid data
 # write.csv(pop_density.grid, "data/grids/population_density.csv", row.names=FALSE)
 # write.csv(buglary_home.grid, "data/grids/buglary_home.csv", row.names=FALSE)
@@ -49,7 +58,7 @@ police_stations.grid <- GenGrid$from_raster(police_stations.r)
 # write.csv(police_stations.grid, "data/grids/police_stations.csv", row.names=FALSE)
 
 # population
-pop_density_thres = 10
+pop_density_thres = 100
 pop_density.grid$density[is.na(pop_density.grid$density)] <- 0
 pop_density.grid$valid <- pop_density.grid$density >= pop_density_thres
 
@@ -64,51 +73,88 @@ police_stations.neighbor3.grid$has_station[police_stations.neighbor3.indices] <-
 # police_stations.neighbor3.grid$val[police_stations.neighbor3.indices] <- 1
 
 # calc mean
+# # neighbor mean 3x3
+# buglary_home.rmean3 <- AnlGrid$mean(buglary_home.r, AnlGrid$wmean(3))
+# buglary_car.rmean3 <- AnlGrid$mean(buglary_car.r, AnlGrid$wmean(3))
+# buglary_bike.rmean3 <- AnlGrid$mean(buglary_bike.r, AnlGrid$wmean(3))
+# buglary_home.gridmean3 <- GenGrid$from_raster(buglary_home.rmean3)
+# buglary_car.gridmean3 <- GenGrid$from_raster(buglary_car.rmean3)
+# buglary_bike.gridmean3 <- GenGrid$from_raster(buglary_bike.rmean3)
+# 
+# # neighbor mean 5x5
+# buglary_home.rmean5 <- AnlGrid$mean(buglary_home.r, AnlGrid$wmean(5))
+# buglary_car.rmean5 <- AnlGrid$mean(buglary_car.r, AnlGrid$wmean(5))
+# buglary_bike.rmean5 <- AnlGrid$mean(buglary_bike.r, AnlGrid$wmean(5))
+# buglary_home.gridmean5 <- GenGrid$from_raster(buglary_home.rmean5)
+# buglary_car.gridmean5 <- GenGrid$from_raster(buglary_car.rmean5)
+# buglary_bike.gridmean5 <- GenGrid$from_raster(buglary_bike.rmean5)
+# 
+# # neighbor mean 7x7
+# buglary_home.rmean7 <- AnlGrid$mean(buglary_home.r, AnlGrid$wmean(7))
+# buglary_car.rmean7 <- AnlGrid$mean(buglary_car.r, AnlGrid$wmean(7))
+# buglary_bike.rmean7 <- AnlGrid$mean(buglary_bike.r, AnlGrid$wmean(7))
+# buglary_home.gridmean7 <- GenGrid$from_raster(buglary_home.rmean7)
+# buglary_car.gridmean7 <- GenGrid$from_raster(buglary_car.rmean7)
+# buglary_bike.gridmean7 <- GenGrid$from_raster(buglary_bike.rmean7)
+# 
+# # neighbor mean 9x9
+# buglary_home.rmean9 <- AnlGrid$mean(buglary_home.r, AnlGrid$wmean(9))
+# buglary_car.rmean9 <- AnlGrid$mean(buglary_car.r, AnlGrid$wmean(9))
+# buglary_bike.rmean9 <- AnlGrid$mean(buglary_bike.r, AnlGrid$wmean(9))
+# buglary_home.gridmean9 <- GenGrid$from_raster(buglary_home.rmean9)
+# buglary_car.gridmean9 <- GenGrid$from_raster(buglary_car.rmean9)
+# buglary_bike.gridmean9 <- GenGrid$from_raster(buglary_bike.rmean9)
+
 # neighbor mean 3x3
-buglary_home.rmean3 <- AnlGrid$mean(buglary_home.r, AnlGrid$wmean(3))
-buglary_car.rmean3 <- AnlGrid$mean(buglary_car.r, AnlGrid$wmean(3))
-buglary_bike.rmean3 <- AnlGrid$mean(buglary_bike.r, AnlGrid$wmean(3))
+buglary_home.rmean3 <- AnlGrid$mean(buglary_home.density.r, AnlGrid$wmean(3))
+buglary_car.rmean3 <- AnlGrid$mean(buglary_car.density.r, AnlGrid$wmean(3))
+buglary_bike.rmean3 <- AnlGrid$mean(buglary_bike.density.r, AnlGrid$wmean(3))
 buglary_home.gridmean3 <- GenGrid$from_raster(buglary_home.rmean3)
 buglary_car.gridmean3 <- GenGrid$from_raster(buglary_car.rmean3)
 buglary_bike.gridmean3 <- GenGrid$from_raster(buglary_bike.rmean3)
 
 # neighbor mean 5x5
-buglary_home.rmean5 <- AnlGrid$mean(buglary_home.r, AnlGrid$wmean(5))
-buglary_car.rmean5 <- AnlGrid$mean(buglary_car.r, AnlGrid$wmean(5))
-buglary_bike.rmean5 <- AnlGrid$mean(buglary_bike.r, AnlGrid$wmean(5))
+buglary_home.rmean5 <- AnlGrid$mean(buglary_home.density.r, AnlGrid$wmean(5))
+buglary_car.rmean5 <- AnlGrid$mean(buglary_car.density.r, AnlGrid$wmean(5))
+buglary_bike.rmean5 <- AnlGrid$mean(buglary_bike.density.r, AnlGrid$wmean(5))
 buglary_home.gridmean5 <- GenGrid$from_raster(buglary_home.rmean5)
 buglary_car.gridmean5 <- GenGrid$from_raster(buglary_car.rmean5)
 buglary_bike.gridmean5 <- GenGrid$from_raster(buglary_bike.rmean5)
 
 # neighbor mean 7x7
-buglary_home.rmean7 <- AnlGrid$mean(buglary_home.r, AnlGrid$wmean(7))
-buglary_car.rmean7 <- AnlGrid$mean(buglary_car.r, AnlGrid$wmean(7))
-buglary_bike.rmean7 <- AnlGrid$mean(buglary_bike.r, AnlGrid$wmean(7))
+buglary_home.rmean7 <- AnlGrid$mean(buglary_home.density.r, AnlGrid$wmean(7))
+buglary_car.rmean7 <- AnlGrid$mean(buglary_car.density.r, AnlGrid$wmean(7))
+buglary_bike.rmean7 <- AnlGrid$mean(buglary_bike.density.r, AnlGrid$wmean(7))
 buglary_home.gridmean7 <- GenGrid$from_raster(buglary_home.rmean7)
 buglary_car.gridmean7 <- GenGrid$from_raster(buglary_car.rmean7)
 buglary_bike.gridmean7 <- GenGrid$from_raster(buglary_bike.rmean7)
 
 # neighbor mean 9x9
-buglary_home.rmean9 <- AnlGrid$mean(buglary_home.r, AnlGrid$wmean(9))
-buglary_car.rmean9 <- AnlGrid$mean(buglary_car.r, AnlGrid$wmean(9))
-buglary_bike.rmean9 <- AnlGrid$mean(buglary_bike.r, AnlGrid$wmean(9))
+buglary_home.rmean9 <- AnlGrid$mean(buglary_home.density.r, AnlGrid$wmean(9))
+buglary_car.rmean9 <- AnlGrid$mean(buglary_car.density.r, AnlGrid$wmean(9))
+buglary_bike.rmean9 <- AnlGrid$mean(buglary_bike.density.r, AnlGrid$wmean(9))
 buglary_home.gridmean9 <- GenGrid$from_raster(buglary_home.rmean9)
 buglary_car.gridmean9 <- GenGrid$from_raster(buglary_car.rmean9)
 buglary_bike.gridmean9 <- GenGrid$from_raster(buglary_bike.rmean9)
 
 # merge grid data
 features.grid <- cbind(grid_coords, pop_valid=pop_density.grid$valid, has_station=police_stations.grid$has_station, has_station_n3=police_stations.neighbor3.grid$has_station,
-                       buglary_home=buglary_home.grid$val, buglary_home_mean3=buglary_home.gridmean3$val, buglary_home_mean5=buglary_home.gridmean5$val, buglary_home_mean7=buglary_home.gridmean7$val, buglary_home_mean9=buglary_home.gridmean9$val,
-                       buglary_car=buglary_car.grid$val, buglary_car_mean3=buglary_car.gridmean3$val, buglary_car_mean5=buglary_car.gridmean5$val, buglary_car_mean7=buglary_car.gridmean7$val, buglary_car_mean9=buglary_car.gridmean9$val,
-                       buglary_bike=buglary_bike.grid$val, buglary_bike_mean3=buglary_bike.gridmean3$val, buglary_bike_mean5=buglary_bike.gridmean5$val, buglary_bike_mean7=buglary_bike.gridmean7$val, buglary_bike_mean9=buglary_bike.gridmean9$val)
+                       buglary_home=buglary_home.grid$val, buglary_home_density=buglary_home.density.grid$val, buglary_home_mean3=buglary_home.gridmean3$val, buglary_home_mean5=buglary_home.gridmean5$val, buglary_home_mean7=buglary_home.gridmean7$val, buglary_home_mean9=buglary_home.gridmean9$val,
+                       buglary_car=buglary_car.grid$val, buglary_car_density=buglary_car.density.grid$val, buglary_car_mean3=buglary_car.gridmean3$val, buglary_car_mean5=buglary_car.gridmean5$val, buglary_car_mean7=buglary_car.gridmean7$val, buglary_car_mean9=buglary_car.gridmean9$val,
+                       buglary_bike=buglary_bike.grid$val, buglary_bike_density=buglary_bike.density.grid$val, buglary_bike_mean3=buglary_bike.gridmean3$val, buglary_bike_mean5=buglary_bike.gridmean5$val, buglary_bike_mean7=buglary_bike.gridmean7$val, buglary_bike_mean9=buglary_bike.gridmean9$val)
 # write feature data
-write.csv(features.grid, "data/feature/features.csv", row.names=FALSE)
+write.csv(features.grid, "data/feature/features_pop100_density.csv", row.names=FALSE)
 
 # make 0 NA
 pop_density.grid$density[pop_density.grid$density == 0] <- NA
 buglary_home.grid$val[buglary_home.grid$val == 0] <- NA
 buglary_car.grid$val[buglary_car.grid$val == 0] <- NA
 buglary_bike.grid$val[buglary_bike.grid$val == 0] <- NA
+
+buglary_home.density.grid$val[buglary_home.density.grid$val == 0] <- NA
+buglary_car.density.grid$val[buglary_car.density.grid$val == 0] <- NA
+buglary_bike.density.grid$val[buglary_bike.density.grid$val == 0] <- NA
+
 police_stations.grid$val[police_stations.grid$val == 0] <- NA
 police_stations.neighbor3.grid$val[police_stations.neighbor3.grid$val == 0] <- NA
 
@@ -132,4 +178,4 @@ buglary_bike.gridmean9$val[buglary_bike.gridmean9$val == 0] <- NA
 # MapDrawer$drawTaipei() + MapDrawer$drawRaster(police_stations.r) + MapDrawer$drawPoints(police_stations, "yellow")
 # MapDrawer$drawTaipei() + MapDrawer$drawPoints(grid_coords) + MapDrawer$drawRaster(buglary_home.r)
 # MapDrawer$drawTaipei() + geom_point(data = pop_density.grid, aes(x = long, y = lat, color = density), size = 2, alpha = 0.8)
-MapDrawer$drawTaipei() + geom_point(data = police_stations.neighbor3.grid, aes(x = long, y = lat, color = val), size = 2, alpha = 0.8)
+MapDrawer$drawTaipei() + geom_point(data = buglary_bike.gridmean3, aes(x = long, y = lat, color = val), size = 2, alpha = 0.8)
