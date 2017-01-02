@@ -13,8 +13,8 @@ GenGrid <- module({
   taipei_bbox <- bbox(taipei_districts)
   
   resolution <- 0.0045
-  long_len <- floor(abs(taipei_bbox[1,2] - taipei_bbox[1,1]) / resolution)
-  lat_len <- floor(abs(taipei_bbox[2,2] - taipei_bbox[2,1]) / resolution)
+  long_len <- floor(abs(taipei_bbox[1,2] - taipei_bbox[1,1]) / resolution) + 10
+  lat_len <- floor(abs(taipei_bbox[2,2] - taipei_bbox[2,1]) / resolution) + 10
   
   coords <- function() {
     # grid
