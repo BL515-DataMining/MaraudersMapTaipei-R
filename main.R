@@ -57,6 +57,17 @@ names(police_stations.count) <- c("x", "freq")
 pop_density.count <- districts_pop_density
 names(pop_density.count) <- c("x", "freq")
 
+# bin plot
+# pop_density.count.sorted <- pop_density.count[with(pop_density.count, order(-freq)), ]
+# buglary_home.count.sorted <- buglary_home.count[with(buglary_home.count, order(-freq)), ]
+# buglary_car.count.sorted <- buglary_car.count[with(buglary_car.count, order(-freq)), ]
+# buglary_bike.count.sorted <- buglary_bike.count[with(buglary_bike.count, order(-freq)), ]
+#
+# pop_density.count.top50 <- pop_density.count.sorted[1:50,]
+# buglary_home.count.top50 <- buglary_home.count.sorted[1:50,]
+# buglary_car.count.top50 <- buglary_car.count.sorted[1:50,]
+# buglary_bike.count.top50 <- buglary_bike.count.sorted[1:50,]
+
 # write.csv(buglary_home.locations, "data/burglary/home_district.csv", row.names=FALSE)
 # write.csv(buglary_car.locations, "data/burglary/car_district.csv", row.names=FALSE)
 # write.csv(buglary_bike.locations, "data/burglary/bike_district.csv", row.names=FALSE)
@@ -218,4 +229,5 @@ buglary_bike.gridmean9$val[buglary_bike.gridmean9$val == 0] <- NA
 # MapDrawer$drawTaipei() + MapDrawer$drawPoints(grid_coords) + MapDrawer$drawRaster(buglary_home.r)
 # MapDrawer$drawTaipei() + geom_point(data = filt_police_stations.neighbor3, aes(x = long, y = lat, color = val), size = 0.1, alpha = 0.6) + scale_colour_gradient(low="green", high="red")
 # MapDrawer$drawTaipei() + geom_point(data = buglary_home.density.grid, aes(x = long, y = lat, color = val), size = 0.1, alpha = 0.8)
+# MapDrawer$drawTaipei() + geom_point(data = buglary_home.coords, aes(x = long, y = lat), color="red", size = 0.4, alpha = 0.9) + geom_point(data = police_stations.coords, aes(x = long, y = lat), color="yellow", size = 0.6, alpha = 0.9)
 
