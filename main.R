@@ -3,6 +3,7 @@ source("convert_coord_to_raster.R")
 source("gen_grid.R")
 source("analyze_grid.R")
 source("map_drawer.R")
+library(corrplot)
 library(plyr)
 
 # read in taipei test event data
@@ -14,11 +15,11 @@ grid_coords <- GenGrid$coords()
 grid_districts <- Coord2District$convert(grid_coords)
 
 # populations
-# pop_density <- read.csv("data/population/taipei_population_density.csv", header = TRUE, sep = ",", encoding = "UTF-8")
-# pop_data <- pop_density[,c("鄉鎮市區名稱", "村里名稱", "人口密度")]
-# colnames(pop_data) <- c("tname", "vname", "density")
-# pop_d <- data.frame(cbind(paste(pop_data$tname, pop_data$vname, sep = ""), pop_data[,"density"]))
-# colnames(pop_d) <- c("tvname", "density")
+pop_density <- read.csv("data/population/taipei_population_density.csv", header = TRUE, sep = ",", encoding = "UTF-8")
+pop_data <- pop_density[,c("鄉鎮市區名稱", "村里名稱", "人口密度")]
+colnames(pop_data) <- c("tname", "vname", "density")
+pop_d <- data.frame(cbind(paste(pop_data$tname, pop_data$vname, sep = ""), pop_data[,"density"]))
+colnames(pop_d) <- c("tvname", "density")
 # write.csv(pop_d, "data/population/taipei_density.csv", row.names=FALSE)
 districts_pop_density <- read.csv("data/population/taipei_density.csv", header = TRUE, sep = ",", encoding = "UTF-8")
 
@@ -57,6 +58,17 @@ names(police_stations.count) <- c("x", "freq")
 pop_density.count <- districts_pop_density
 names(pop_density.count) <- c("x", "freq")
 
+# corrplot
+# count.relation <- join(pop_density.count, buglary_home.count, by = "x", type = "left")
+# count.relation <- join(count.relation, buglary_car.count, by = "x", type = "left")
+# count.relation <- join(count.relation, buglary_bike.count, by = "x", type = "left")
+# count.relation[is.na(count.relation)] <- 0
+# names(count.relation) <- c("x", "population.density", "buglary.home", "buglary.car", "buglary.bike")
+# relation <- count.relation[c(2, 3, 4, 5)]
+# corrplot(cor(relation), order = "FPC")
+
+# scatter plot
+
 # bin plot
 # pop_density.count.sorted <- pop_density.count[with(pop_density.count, order(-freq)), ]
 # buglary_home.count.sorted <- buglary_home.count[with(buglary_home.count, order(-freq)), ]
@@ -84,6 +96,31 @@ buglary_home.grid <- GenGrid$from_raster(buglary_home.r)
 buglary_car.grid <- GenGrid$from_raster(buglary_car.r)
 buglary_bike.grid <- GenGrid$from_raster(buglary_bike.r)
 police_stations.grid <- GenGrid$from_raster(police_stations.r)
+
+# grid corrplot
+tpe_pop_density.grid <- pop_density.grid[which(!is.na(pop_density.grid$density)),]
+tpe_grid.coords <- tpe_pop_density.grid[c(1, 2)]
+tpe_police_grid.dist <- distm(tpe_grid.coords, police_stations.coords, fun = distHaversine)
+tpe_police_grid.dist.min <- apply(tpe_police_grid.dist, 1, min)
+grid.relation <- merge(tpe_pop_density.grid, buglary_home.grid, by=c("lat", "long"))
+grid.relation <- merge(grid.relation, buglary_car.grid, by=c("lat", "long"))
+grid.relation <- merge(grid.relation, buglary_bike.grid, by=c("lat", "long"))
+grid.relation$min_police_dist <- tpe_police_grid.dist.min
+names(grid.relation) <- c("lat", "long", "population.density", "buglary.home", "buglary.car", "buglary.bike", "police.min.dist")
+relation.grid <- grid.relation[c(3, 4, 5, 6, 7)]
+grid.corr <- cor(relation.grid)
+corrplot(grid.corr, order = "FPC")
+
+# prepare predict data
+# relation.home.grid <- relation.grid[c(1, 5, 2)]
+# relation.car.grid <- relation.grid[c(1, 5, 3)]
+# relation.bike.grid <- relation.grid[c(1, 5, 4)]
+# relation.home.nominal.grid <- relation.home.grid
+# relation.home.nominal.grid$buglary.home[relation.home.nominal.grid$buglary.home > 0] <- "bug"
+# relation.home.nominal.grid$buglary.home[relation.home.nominal.grid$buglary.home == 0] <- "good"
+# write.csv(relation.home.nominal.grid, "data/predict/predict.home.csv", row.names=FALSE)
+# write.csv(relation.car.grid, "data/predict/predict.car.csv", row.names=FALSE)
+# write.csv(relation.bike.grid, "data/predict/predict.bike.csv", row.names=FALSE)
 
 # handle density factor
 buglary_home.density.r <- AnlGrid$grid_divide_raster(buglary_home.r, pop_density.grid$density)
